@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.encoding.LdapShaPasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,17 +27,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth
 			.ldapAuthentication()
-				.userDnPatterns("uid={0},ou=people")
-				.groupSearchBase("ou=groups")
-				.contextSource(contextSource())
-				.passwordCompare()
-					.passwordEncoder(new LdapShaPasswordEncoder())
-					.passwordAttribute("userPassword");
+				.userDnPatterns("uid={0},cn=users,cn=accounts")
+				.groupSearchBase("cn=groups,cn=accounts")
+				.contextSource(contextSource());
 	}
 
 	@Bean
 	public DefaultSpringSecurityContextSource contextSource() {
-		return  new DefaultSpringSecurityContextSource(Arrays.asList("ldap://localhost:8389/"), "dc=springframework,dc=org");
+		return  new DefaultSpringSecurityContextSource(Arrays.asList("ldap://ipaserver.iit.tsd/"), "dc=iit,dc=tsd");
 	}
 
 }
